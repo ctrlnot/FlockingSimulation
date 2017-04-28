@@ -1,2 +1,2 @@
-# FlockingSimulation
-An attempt to simulate a group of an entity that groups together.
+# Flocking Simulation
+My attempt to create a simulation of a group of flocks or an entity grouping together. Hopefully not just grouping together ^^
