@@ -1,26 +1,31 @@
-function birb(x, y) {
+function Birb(x, y) {
     this.position = createVector(x, y);
     this.velocity = p5.Vector.random2D();
     this.acceleration = createVector();
     this.r = 4;
 
     this.separationAOE = this.r + 25;
-    this.groupingAOE = this.r + 50;
+    this.groupingAOE = this.r + 75;
 
     this.maxspeed = 5;
     this.maxforce = 0.5;
 }
 
-birb.prototype.run = function() {
+Birb.prototype.run = function(mouse) {
     var sep = this.separate();
     var ali = this.aligning();
     var grp = this.grouping();
+    var avm = this.avoidMouse(mouse);
+    avm.mult(1.5);
     sep.mult(1.5);
     ali.mult(1);
     grp.mult(1);
 
     // Apply all forces
+    if (mouseScare) this.applyForce(avm);
+
     if (separating) this.applyForce(sep);
+
     if (flocking) {
         this.applyForce(ali);
         this.applyForce(grp);
@@ -31,7 +36,7 @@ birb.prototype.run = function() {
     this.show();
 }
 
-birb.prototype.update = function() {
+Birb.prototype.update = function() {
     this.velocity.add(this.acceleration);
     this.velocity.limit(this.maxspeed);
     this.position.add(this.velocity);
@@ -44,7 +49,7 @@ birb.prototype.update = function() {
     if (this.position.y < -this.r) this.position.y = height + this.r; // Top
 }
 
-birb.prototype.show = function() {
+Birb.prototype.show = function() {
     // Draw that majestic birb or .. maybe it's just a triangle ._.
     var theta = this.velocity.heading() + PI/2;
     fill(127);
@@ -75,11 +80,11 @@ birb.prototype.show = function() {
     }
 }
 
-birb.prototype.applyForce = function(force) {
+Birb.prototype.applyForce = function(force) {
     this.acceleration.add(force);
 }
 
-birb.prototype.separate = function() {
+Birb.prototype.separate = function() {
     var steer = createVector();
     var count = 0;
 
@@ -110,7 +115,7 @@ birb.prototype.separate = function() {
     return steer;
 }
 
-birb.prototype.seek = function(target) {
+Birb.prototype.seek = function(target) {
     var desired = p5.Vector.sub(target, this.position); // Get the vector that points towards the target
     desired.normalize();
     desired.mult(this.maxspeed);
@@ -120,7 +125,7 @@ birb.prototype.seek = function(target) {
     return steer;
 }
 
-birb.prototype.grouping = function() {
+Birb.prototype.grouping = function() {
     var steer = createVector();
     var count = 0;
 
@@ -141,7 +146,7 @@ birb.prototype.grouping = function() {
     }
 }
 
-birb.prototype.aligning = function() {
+Birb.prototype.aligning = function() {
     var steer = createVector();
     var count = 0;
 
@@ -164,4 +169,27 @@ birb.prototype.aligning = function() {
     } else {
         return createVector();
     }
+}
+
+Birb.prototype.avoidMouse = function(mouse) {
+    var steer = createVector();
+
+    // Check the mouse range and get the vector to move away from mouse
+    var d = p5.Vector.dist(this.position, mouse);
+    if ((d > 0) && (d < this.groupingAOE * 1.25)) {
+        var diff = p5.Vector.sub(this.position, mouse);
+        diff.normalize();
+        diff.div(d);
+        steer.add(diff);
+        steer.div(1);
+    }
+
+    if (steer.mag() > 0) {
+        steer.normalize();
+        steer.mult(this.maxspeed);
+        steer.sub(this.velocity); // Apply steering = desired - velocity <3
+        steer.limit(this.maxforce);
+    }
+
+    return steer;
 }

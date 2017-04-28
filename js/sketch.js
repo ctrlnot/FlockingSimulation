@@ -1,9 +1,10 @@
-var init = 75; // Initial number of birbs
+var init = 10; // Initial number of birbs
 var birbs = [];
 var simulate = true;
 var flocking = false;
 var debugMode = true;
 var separating = true;
+var mouseScare = false;
 
 function setup() {
     var myCanvas = createCanvas(windowWidth, windowHeight);
@@ -11,16 +12,19 @@ function setup() {
 
     // Initial birbs
     for (var i = 0; i < init; i++) {
-        birbs[i] = new birb(random(width), random(height));
+        birbs[i] = new Birb(random(width), random(height));
     }
 }
 
 function draw() {
     background(240);
 
+    // For avoiding and attracting mouse
+    var mouse = createVector(mouseX, mouseY);
+
     // Display birbs
     for (var i = 0; i < birbs.length; i++) {
-        birbs[i].run();
+        birbs[i].run(mouse);
     }
 
     // Send Information
@@ -29,6 +33,7 @@ function draw() {
     document.getElementById('birbs-no').innerHTML = "Number of birbs: " + birbs.length;
     document.getElementById('debug-mode').innerHTML = "Simulation: " + simulate + " | Debug mode: " + debugMode;
     document.getElementById('states-one').innerHTML = "Flocking mode: " + flocking + " | Separating mode: " + separating;
+    document.getElementById('states-two').innerHTML = "Mouse scare: " + mouseScare;
 }
 
 function windowResized() {
@@ -57,6 +62,11 @@ function keyTyped() {
             flocking = true;
             separating = true;
         }
+    }
+
+    // Toggle mouse scare mode
+    if (key === 'n' && simulate) {
+        mouseScare ? mouseScare = false : mouseScare = true;
     }
 }
 
@@ -87,7 +97,7 @@ function keyPressed() {
 
 function mousePressed () {
     // Add birb
-    if (simulate) birbs.push(new birb(mouseX, mouseY));
+    if (simulate) birbs.push(new Birb(mouseX, mouseY));
 
     return false; // End the method for safety purposes
 }
