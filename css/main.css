@@ -17,6 +17,13 @@ canvas {
     z-index: 1;
 }
 
+.fps-info {
+    position: absolute;
+    top: 0%;
+    right: 0%;
+    z-index: 5;
+}
+
 .info {
     position: absolute;
     bottom: 0%;
@@ -24,6 +31,7 @@ canvas {
     z-index: 5;
 }
 
+.fps-info p,
 .info p {
     color: #333;
     font-size: 12px;
