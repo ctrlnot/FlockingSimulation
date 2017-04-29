@@ -5,6 +5,7 @@ var flocking = false;
 var debugMode = true;
 var separating = true;
 var mouseScare = false;
+var mouseAttract = false;
 
 function setup() {
     var myCanvas = createCanvas(windowWidth, windowHeight);
@@ -21,6 +22,12 @@ function draw() {
 
     // For avoiding and attracting mouse
     var mouse = createVector(mouseX, mouseY);
+    if (debugMode) { // Show mouse AOE
+        fill('rgba(66, 66, 66, 0.1)');
+        stroke(66, 66, 66);
+        strokeWeight(1);
+        ellipse(mouse.x, mouse.y, 154, 154);
+    }
 
     // Display birbs
     for (var i = 0; i < birbs.length; i++) {
@@ -33,7 +40,7 @@ function draw() {
     document.getElementById('birbs-no').innerHTML = "Number of birbs: " + birbs.length;
     document.getElementById('debug-mode').innerHTML = "Simulation: " + simulate + " | Debug mode: " + debugMode;
     document.getElementById('states-one').innerHTML = "Flocking mode: " + flocking + " | Separating mode: " + separating;
-    document.getElementById('states-two').innerHTML = "Mouse scare: " + mouseScare;
+    document.getElementById('states-two').innerHTML = "Mouse scare: " + mouseScare + " | Mouse attract: " + mouseAttract;
 }
 
 function windowResized() {
@@ -66,7 +73,22 @@ function keyTyped() {
 
     // Toggle mouse scare mode
     if (key === 'n' && simulate) {
-        mouseScare ? mouseScare = false : mouseScare = true;
+        if (mouseScare) {
+            mouseScare = false;
+        } else {
+            mouseScare = true;
+            mouseAttract = false; // Off the attract mode
+        }
+    }
+
+    // Toggle mouse attract mode
+    if (key === 'm' && simulate) {
+        if (mouseAttract) {
+            mouseAttract = false;
+        } else {
+            mouseAttract = true;
+            mouseScare = false; // Off the scare mode
+        }
     }
 }
 
@@ -86,6 +108,14 @@ function keyPressed() {
     if (keyCode === ESCAPE) {
         birbs = []; // Truncate the birbs' array
 
+        // Reset states
+        simulate = true;
+        flocking = false;
+        debugMode = true;
+        separating = true;
+        mouseScare = false;
+        mouseAttract = false;
+
         for (var i = 0; i < init; i++) {
             birbs[i] = new birb(random(width), random(height));
         }
@@ -93,6 +123,16 @@ function keyPressed() {
 
     // Kill one birb :(
     if (keyCode === BACKSPACE) birbs.pop();
+
+    // Produce instant 5 birbs :>
+    if (keyCode === ENTER) {
+        for (var i = 0; i < 5; i++) {
+            birbs.push(new Birb(mouseX, mouseY));
+        }
+    }
+
+    // Kills five birbs :(
+    if (keyCode === DELETE && birbs.length >= 5) birbs.splice(-5, 5);
 }
 
 function mousePressed () {
