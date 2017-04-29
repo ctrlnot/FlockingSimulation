@@ -9,7 +9,7 @@ function Birb(x, y) {
     this.mouseDetectAOE = this.r + 150;
 
     this.maxspeed = 8;
-    this.maxforce = 1;
+    this.maxforce = 0.5;
 }
 
 
@@ -178,7 +178,7 @@ Birb.prototype.trackAttractor = function() {
 
     for (var i = 0; i < attractors.length; i++) {
         var d = p5.Vector.dist(this.position, attractors[i].position);
-        if ((d > 0) && (d < attractors[i].aoe)) {
+        if ((d > 0) && (d < attractors[i].aoe * 1.25)) {
             steer.add(attractors[i].position);
             count++;
         }
@@ -221,7 +221,7 @@ Birb.prototype.update = function() {
     if (this.position.y < -this.r) this.position.y = height + this.r; // Top
 }
 
-Birb.prototype.show = function() {
+Birb.prototype.show = function(r, g, b) {
     // Draw that majestic birb or .. maybe it's just a triangle ._.
     var theta = this.velocity.heading() + PI/2;
     fill(127);
@@ -259,6 +259,7 @@ Birb.prototype.show = function() {
 }
 
 Birb.prototype.run = function(mouse) {
+
     var sep = this.separate();
     var ali = this.aligning();
     var grp = this.grouping();
@@ -267,9 +268,9 @@ Birb.prototype.run = function(mouse) {
     var avr = this.avoidRepellant();
     var ata = this.trackAttractor();
 
-    avr.mult(1.5);
-    avm.mult(1.5);
-    sep.mult(1.5);
+    avr.mult(2);
+    avm.mult(2);
+    sep.mult(2);
     ata.mult(1);
     atm.mult(1);
     ali.mult(1);

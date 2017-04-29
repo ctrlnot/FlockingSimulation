@@ -2,7 +2,7 @@ function Box(x, y, type) {
     this.position = createVector(x, y);
     this.w = 20;
     this.type = type; // 1 - Attract ; 0 - Repel
-    this.aoe = this.w + 100;
+    this.aoe = this.w + 150;
 
     this.show = function() {
         if (this.type) {

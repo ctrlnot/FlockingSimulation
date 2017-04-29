@@ -1,8 +1,9 @@
 var init = 10; // Initial number of birbs
 var birbs = [];
+var hideInfo = true;
 var simulate = true;
 var flocking = false;
-var debugMode = true;
+var debugMode = false;
 var separating = true;
 var mouseScare = false;
 var mouseAttract = false;
@@ -21,7 +22,7 @@ function setup() {
 }
 
 function draw() {
-    background(240);
+    background(255);
 
     // For avoiding and attracting mouse
     var mouse = createVector(mouseX, mouseY);
@@ -45,15 +46,20 @@ function draw() {
         repellants[i].show();
     }
 
-    // if (keyIsDown(17) && simulate && mousePressed()) console.log("Attract!");
-
     // Send Information
-    document.getElementById('fps').innerHTML = "FPS: " + frameRate().toFixed(2);
-
-    document.getElementById('debug-mode').innerHTML = "Simulation: " + simulate + " | Debug mode: " + debugMode;
-    document.getElementById('states-one').innerHTML = "Flocking mode: " + flocking + " | Separating mode: " + separating;
-    document.getElementById('states-two').innerHTML = "Mouse scare: " + mouseScare + " | Mouse attract: " + mouseAttract;
-    document.getElementById('numbers').innerHTML = "Number of birbs: " + birbs.length + " | Number of attractors: " + attractors.length + " | Number of repellants: " + repellants.length;
+    if (hideInfo) {
+        document.getElementById('fps').innerHTML = "FPS: " + frameRate().toFixed(2);
+        document.getElementById('debug-mode').innerHTML = "Simulation: " + simulate + " | Debug mode: " + debugMode;
+        document.getElementById('states-one').innerHTML = "Flocking mode: " + flocking + " | Separating mode: " + separating;
+        document.getElementById('states-two').innerHTML = "Mouse scare mode: " + mouseScare + " | Mouse attract mode: " + mouseAttract;
+        document.getElementById('numbers').innerHTML = "Number of birbs: " + birbs.length + " | Number of attractors: " + attractors.length + " | Number of repellants: " + repellants.length;
+    } else {
+        document.getElementById('fps').innerHTML = "";
+        document.getElementById('debug-mode').innerHTML = "";
+        document.getElementById('states-one').innerHTML = "";
+        document.getElementById('states-two').innerHTML = "";
+        document.getElementById('numbers').innerHTML = "";
+    }
 }
 
 function windowResized() {
@@ -109,6 +115,11 @@ function keyTyped() {
         attractors = [];
         repellants = [];
     }
+
+    // Hide informations
+    if (key === 'i' && simulate) {
+        hideInfo ? hideInfo = false : hideInfo = true;
+    }
 }
 
 function keyPressed() {
@@ -125,7 +136,9 @@ function keyPressed() {
 
     // Restart canvas
     if (keyCode === ESCAPE) {
-        birbs = []; // Truncate the birbs' array
+        birbs = []; // Clear birbs' array
+        attractors = []; // Clear attractors' array
+        repellants = []; // Clear repellants' array
 
         // Reset states
         simulate = true;

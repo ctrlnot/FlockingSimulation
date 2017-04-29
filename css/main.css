@@ -5,6 +5,11 @@
     box-sizing: border-box;
 }
 
+body {
+    color: #333;
+    font-family: "Lucida Console", sans-serif;
+}
+
 canvas {
     position: fixed;
     top: 0;
@@ -17,6 +22,11 @@ canvas {
     z-index: 1;
 }
 
+h1 {
+    font-family: "Open sans", sans-serif;
+    text-align: center;
+}
+
 .fps-info {
     position: absolute;
     top: 0%;
@@ -24,16 +34,26 @@ canvas {
     z-index: 5;
 }
 
-.info {
+.info-left {
     position: absolute;
     bottom: 0%;
     left: 0%;
     z-index: 5;
 }
 
+.info-right {
+    position: absolute;
+    bottom: 1%;
+    right: 1%;
+    z-index: 5;
+}
+
 .fps-info p,
-.info p {
-    color: #333;
+.info-right p,
+.info-left p {
     font-size: 12px;
-    font-family: "Lucida Console", sans-serif;
+}
+
+a {
+    color: inherit;
 }
