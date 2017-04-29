@@ -7,6 +7,9 @@ var separating = true;
 var mouseScare = false;
 var mouseAttract = false;
 
+var repellants = [];
+var attractors = [];
+
 function setup() {
     var myCanvas = createCanvas(windowWidth, windowHeight);
     myCanvas.parent('content');
@@ -34,13 +37,23 @@ function draw() {
         birbs[i].run(mouse);
     }
 
+    // Display repellants and attractors
+    for (var i = 0; i < attractors.length; i++) {
+        attractors[i].show();
+    }
+    for (var i = 0; i < repellants.length; i++) {
+        repellants[i].show();
+    }
+
+    // if (keyIsDown(17) && simulate && mousePressed()) console.log("Attract!");
+
     // Send Information
     document.getElementById('fps').innerHTML = "FPS: " + frameRate().toFixed(2);
 
-    document.getElementById('birbs-no').innerHTML = "Number of birbs: " + birbs.length;
     document.getElementById('debug-mode').innerHTML = "Simulation: " + simulate + " | Debug mode: " + debugMode;
     document.getElementById('states-one').innerHTML = "Flocking mode: " + flocking + " | Separating mode: " + separating;
     document.getElementById('states-two').innerHTML = "Mouse scare: " + mouseScare + " | Mouse attract: " + mouseAttract;
+    document.getElementById('numbers').innerHTML = "Number of birbs: " + birbs.length + " | Number of attractors: " + attractors.length + " | Number of repellants: " + repellants.length;
 }
 
 function windowResized() {
@@ -90,6 +103,12 @@ function keyTyped() {
             mouseScare = false; // Off the scare mode
         }
     }
+
+    // Clear all the boxes and walls
+    if (key === 'c' && simulate) {
+        attractors = [];
+        repellants = [];
+    }
 }
 
 function keyPressed() {
@@ -115,29 +134,26 @@ function keyPressed() {
         separating = true;
         mouseScare = false;
         mouseAttract = false;
-
-        for (var i = 0; i < init; i++) {
-            birbs[i] = new birb(random(width), random(height));
-        }
     }
 
     // Kill one birb :(
     if (keyCode === BACKSPACE) birbs.pop();
 
-    // Produce instant 5 birbs :>
-    if (keyCode === ENTER) {
+    // Produce instant 5 birbs :> 45 = Keycode of Insert Key
+    if (keyCode === 45) {
         for (var i = 0; i < 5; i++) {
             birbs.push(new Birb(mouseX, mouseY));
         }
     }
 
-    // Kills five birbs :(
-    if (keyCode === DELETE && birbs.length >= 5) birbs.splice(-5, 5);
+    // Kills five birbs :( 46 = Keycode of Delete Key
+    if (keyCode === 46 && birbs.length >= 5) birbs.splice(-5, 5);
 }
 
 function mousePressed () {
-    // Add birb
-    if (simulate) birbs.push(new Birb(mouseX, mouseY));
+    birbs.push(new Birb(mouseX, mouseY)); // Add birb
+    if (keyIsDown(17)) attractors.push(new Box(mouseX, mouseY, true)); // Add attractor box (Ctrl key)
+    if (keyIsDown(18)) repellants.push(new Box(mouseX, mouseY, false)); // Add repellant box (Alt key)
 
     return false; // End the method for safety purposes
 }

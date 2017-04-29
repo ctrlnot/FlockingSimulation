@@ -8,8 +8,8 @@ function Birb(x, y) {
     this.groupingAOE = this.r + 75;
     this.mouseDetectAOE = this.r + 150;
 
-    this.maxspeed = 5;
-    this.maxforce = 0.5;
+    this.maxspeed = 8;
+    this.maxforce = 1;
 }
 
 
@@ -141,6 +141,57 @@ Birb.prototype.attractMouse = function(mouse) {
     }
 }
 
+Birb.prototype.avoidRepellant = function() {
+    var steer = createVector();
+    var count = 0;
+
+    // Check the neighbors
+    for (var i = 0; i < repellants.length; i++) {
+        var d = p5.Vector.dist(this.position, repellants[i].position);
+        if ((d > 0) && (d < repellants[i].aoe)) {
+            var diff = p5.Vector.sub(this.position, repellants[i].position);
+            diff.normalize();
+            diff.div(d);
+            steer.add(diff);
+            count++;
+        }
+    }
+
+    // Get the average steering velocity
+    if (count > 0) {
+        steer.div(count);
+    }
+
+    if (steer.mag() > 0) {
+        steer.normalize();
+        steer.mult(this.maxspeed);
+        steer.sub(this.velocity); // Apply steering = desired - velocity <3
+        steer.limit(this.maxforce);
+    }
+
+    return steer;
+}
+
+Birb.prototype.trackAttractor = function() {
+    var steer = createVector();
+    var count = 0;
+
+    for (var i = 0; i < attractors.length; i++) {
+        var d = p5.Vector.dist(this.position, attractors[i].position);
+        if ((d > 0) && (d < attractors[i].aoe)) {
+            steer.add(attractors[i].position);
+            count++;
+        }
+    }
+
+    // Getting average position
+    if (count > 0) {
+        steer.div(count);
+        return this.seek(steer);
+    } else {
+        return createVector();
+    }
+}
 
 
 
@@ -163,7 +214,7 @@ Birb.prototype.update = function() {
     this.position.add(this.velocity);
     this.acceleration.mult(0);
 
-    // Go to other side if outside the window
+    // Dealing when out of bounds
     if (this.position.x > width + this.r) this.position.x = -this.r; // Right
     if (this.position.x < -this.r) this.position.x = width + this.r; // Left
     if (this.position.y > height + this.r) this.position.y = -this.r; // Bottom
@@ -199,7 +250,7 @@ Birb.prototype.show = function() {
         strokeWeight(1);
         ellipse(this.position.x, this.position.y, this.groupingAOE, this.groupingAOE);
 
-        // Draw gray circle for grouping debugging
+        // Draw gray circle for mouse interaction debugging
         fill('rgba(66, 66, 66, 0.1)');
         stroke(66, 66, 66);
         strokeWeight(1);
@@ -213,16 +264,22 @@ Birb.prototype.run = function(mouse) {
     var grp = this.grouping();
     var avm = this.avoidMouse(mouse);
     var atm = this.attractMouse(mouse);
+    var avr = this.avoidRepellant();
+    var ata = this.trackAttractor();
 
+    avr.mult(1.5);
     avm.mult(1.5);
     sep.mult(1.5);
+    ata.mult(1);
     atm.mult(1);
     ali.mult(1);
     grp.mult(1);
 
     // Apply all forces
-    if (mouseAttract) this.applyForce(atm);
+    this.applyForce(avr);
+    this.applyForce(ata);
     if (mouseScare) this.applyForce(avm);
+    if (mouseAttract) this.applyForce(atm);
     if (separating) this.applyForce(sep);
     if (flocking) {
         this.applyForce(ali);
