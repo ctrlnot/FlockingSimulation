@@ -1,4 +1,4 @@
-var init = 10; // Initial number of birbs
+var init = 50; // Initial number of birbs
 var birbs = [];
 var hideInfo = true;
 var simulate = true;

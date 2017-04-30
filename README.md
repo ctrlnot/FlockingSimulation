@@ -28,5 +28,6 @@ My attempt to demonstrate an algorithm that simulates (I hope) a "realistic" gro
 
 ### Dev's notes
 - Try to mix different blocks for interesting effects on the flocking behavoir.
+- The more birbs, more satisfying! (for me at least lol)
 - No birbs were harmed in the making of this simulation.
 - Thanks!
